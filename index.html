@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trading Performance Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Trading Performance Dashboard</h1>
+      <p>Upload a CSV and the dashboard updates automatically based on your trade history.</p>
+    </div>
+    <div class="badge" id="periodBadge">Sample period: —</div>
+  </div>
+
+  <div class="upload-bar">
+    <label class="upload-label">
+      <span>Upload CSV</span>
+      <input type="file" id="csvFile" accept=".csv" />
+    </label>
+    <button class="secondary-btn" id="loadSampleBtn" type="button">Load Sample Data</button>
+    <div class="hint">Expected columns: Date, Trade, Size, Entry, Avg Exit, P/L %, P/L in $</div>
+  </div>
+
+  <div class="grid-kpi">
+    <div class="card kpi"><div class="label">Total P/L</div><div class="value" id="kpiTotalPL">$0</div></div>
+    <div class="card kpi"><div class="label">Win Rate</div><div class="value" id="kpiWinRate">0%</div></div>
+    <div class="card kpi"><div class="label">Total Trades</div><div class="value" id="kpiTotalTrades">0</div></div>
+    <div class="card kpi"><div class="label">Green Days</div><div class="value positive" id="kpiGreenDays">0</div></div>
+    <div class="card kpi"><div class="label">Red Days</div><div class="value negative" id="kpiRedDays">0</div></div>
+    <div class="card kpi"><div class="label">Avg P/L per Trade</div><div class="value" id="kpiAvgTrade">$0</div></div>
+  </div>
+
+  <div class="grid-main">
+    <div class="card chart-card">
+      <h3 class="section-title">Equity Curve</h3>
+      <div class="subtle">Cumulative day-wise performance</div>
+      <canvas id="equityChart"></canvas>
+    </div>
+    <div class="card chart-card">
+      <h3 class="section-title">Day-wise Profit / Loss</h3>
+      <div class="subtle">Quickly spot strong and weak trading days</div>
+      <canvas id="dailyChart"></canvas>
+    </div>
+  </div>
+
+  <div class="grid-charts">
+    <div class="card chart-card short spark-widget">
+      <div class="spark-top">
+        <div>
+          <div class="spark-kicker">Trading Journal Widget</div>
+          <h3 class="spark-title">Green Days vs Red Days</h3>
+        </div>
+        <div class="spark-rate-box">
+          <div class="spark-rate-label">Win-Day<br>Rate</div>
+          <div class="spark-rate-value" id="sparkWinRate">0%</div>
+        </div>
+      </div>
+
+      <div class="spark-row">
+        <div class="spark-row-head">
+          <span>Profitable Days</span>
+          <strong id="profitableDaysCount">0</strong>
+        </div>
+        <div class="spark-track">
+          <div class="spark-fill green" id="profitableDaysBar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="spark-row">
+        <div class="spark-row-head">
+          <span>Losing Days</span>
+          <strong id="losingDaysCount">0</strong>
+        </div>
+        <div class="spark-track">
+          <div class="spark-fill red" id="losingDaysBar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card chart-card short">
+      <h3 class="section-title">Winning Trades vs Losing Trades</h3>
+      <div class="subtle">Trade outcome split</div>
+      <canvas id="winLossChart"></canvas>
+    </div>
+
+    <div class="card chart-card short">
+      <h3 class="section-title">Trade P/L Distribution</h3>
+      <div class="subtle">Each bar shows a single trade result in dollars</div>
+      <canvas id="tradeDistChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="calendar-head">
+      <div>
+        <h3 class="section-title" style="margin-bottom:6px;" id="calendarTitle">Calendar View</h3>
+        <div class="subtle" style="margin:0;">Green = profitable day, Red = losing day, value shown inside each date</div>
+      </div>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--green)"></i> Profit day</span>
+        <span><i class="dot" style="background:var(--red)"></i> Loss day</span>
+        <span><i class="dot" style="background:rgba(255,255,255,.25)"></i> No trades</span>
+      </div>
+    </div>
+    <div class="calendar-weekdays">
+      <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </div>
+
+  <div class="card" style="margin-top:18px;">
+    <h3 class="section-title">Trade History</h3>
+    <div class="subtle">Sorted descending by date</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Trade</th><th>Size</th><th>Entry</th><th>Avg Exit</th><th>P/L %</th><th>P/L in $</th>
+          </tr>
+        </thead>
+        <tbody id="tradeTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
